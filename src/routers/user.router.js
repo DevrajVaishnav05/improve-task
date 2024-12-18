@@ -19,14 +19,13 @@ router.post(
             const { name, email, gender, number, password, cpassword } = req.body;
 
             if (password == cpassword) {
-                const newUser = new UserModel({
+                await UserModel.create({
                     name,
                     email,
                     gender,
                     number,
                     password,
                 });
-                await newUser.save();
                 res.status(201).render("index");
             }else{
                 res.send("password is  match");
@@ -46,25 +45,26 @@ router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Find user by email
         const user = await UserModel.findOne({ email: email });
-
-        // Check if user exists
         if (!user) {
-            return res.status(404).send("User not found.");
+            return res.status(400).send("Invalid email or password.");
         }
 
-        // Compare passwords (plain text comparison - NOT SECURE)
-        if (user.password == password) {
-            res.status(200).render("index");
+        
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (isMatch) {
+            return res.status(200).render("index");
         } else {
-            return res.status(400).send("Passwords do not match.");
+            return res.status(400).send("Invalid email or password.");
         }
     } catch (error) {
-        console.error("Error during login:", error);
-        res.status(500).send({ error: "An error occurred during login. Please try again." });
+        res.status(500).send({
+            error: "An error occurred during login. Please try again.",
+        });
     }
 });
+
+
 
 
 // --->> bcrypt setup and use <<----
