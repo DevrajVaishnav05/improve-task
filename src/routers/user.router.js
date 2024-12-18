@@ -4,34 +4,42 @@ const UserModel = require("../models/user-model")
 const router = new express.Router();
 
 
-router.get("/login",(req,res)=>{
+router.get("/login", (req, res) => {
     res.render("login");
 })
-router.get("/register",(req,res)=>{
+router.get("/register", (req, res) => {
     res.render("register");
 })
 
-router.post("/register", async (req, res) => {
-    try {
-        const { name, email, gender, number, password, cpassword } = req.body;
+router.post(
+    "/register",
 
-        if (password !== cpassword) {
-            return res.status(400).send("Passwords do not match.");
+    async (req, res) => {
+        try {
+            const { name, email, gender, number, password, cpassword } = req.body;
+
+            if (password == cpassword) {
+                const newUser = new UserModel({
+                    name,
+                    email,
+                    gender,
+                    number,
+                    password,
+                });
+                await newUser.save();
+                res.status(201).render("index");
+            }else{
+                res.send("password is  match");
+            }
+         
+        } catch (error) {
+            res.status(500).send({
+                error: "An error occurred during registration. Please try again.",
+            });
         }
-        const newUser = new UserModel({
-            name,
-            email,
-            gender,
-            number,
-            password
-        });
-        await newUser.save(); 
-        res.status(201).render("index");
-    } catch (error) {
-        console.error("Error during registration:", error);
-        res.status(500).send({ error: "An error occurred during registration. Please try again." });
     }
-});
+);
+
 
 
 router.post("/login", async (req, res) => {
