@@ -1,7 +1,8 @@
 const express = require("express");
 const path = require("path")
 const app = express();
-const port = process.env.PORT || 3000;
+require("dotenv").config();
+const port = process.env.PORT || 3000 ;
 require("./db/connection")
 const userRouter = require("./routers/user.router")
 const static_path = path.join(__dirname,"../public")
