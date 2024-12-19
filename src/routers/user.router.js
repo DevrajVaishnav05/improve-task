@@ -81,9 +81,7 @@ router.post("/login", async (req, res) => {
         if (!isMatch) {
             return res.status(400).send("Invalid email or password.");
         }
-
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "1h" });
-
         res.cookie("jwt",token,{
             expires:new Date(Date.now()+30000)
         }).render("index");
