@@ -4,12 +4,17 @@ const jwt = require("jsonwebtoken")
 const UserModel = require("../models/user-model")
 const router = new express.Router();
 const JWT_SECRET = process.env.JWT_KEY || "testkey";
+const auth = require("../middleware/auth")
+
 
 router.get("/login", (req, res) => {
     res.render("login");
 })
 router.get("/register", (req, res) => {
     res.render("register");
+})
+router.get("/secret", auth, (req, res) => {
+    res.render("secret");
 })
 router.post("/register", async (req, res) => {
     try {
@@ -42,7 +47,11 @@ router.post("/register", async (req, res) => {
         // Generate JWT
         const token = jwt.sign({ _id: newUser._id }, JWT_SECRET, { expiresIn: "1h" });
 
-        res.render("index")
+        res.cookie("jwt",token,{
+            expires:new Date(Date.now()+30000)
+        }).render("index");
+
+
         // res.status(201).send({
         //     message: "User registered successfully.",
         //     token,
@@ -74,8 +83,12 @@ router.post("/login", async (req, res) => {
         }
 
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "1h" });
-        
-        res.render("index");
+
+        res.cookie("jwt",token,{
+            expires:new Date(Date.now()+30000)
+        }).render("index");
+       
+         // res.render("index");
         // res.status(200).send({
         //     message: "Login successful.",
         //     token,
