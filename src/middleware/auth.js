@@ -13,8 +13,9 @@ const auth = async (req, res, next) => {
             return res.status(401).render("login");
         }
         req.user = user;
-        console.log(verifyUser._id); // You can log to check the decoded token details
-        console.log(user); // Log the user retrieved from the database
+        req.token = token;
+        // console.log(verifyUser._id); 
+        // console.log(user); 
 
         next();
 

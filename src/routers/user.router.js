@@ -16,6 +16,16 @@ router.get("/register", (req, res) => {
 router.get("/secret", auth, (req, res) => {
     res.render("secret");
 })
+router.get("/logout", auth, (req, res) => {
+    try {
+        res.clearCookie("jwt").render("login");
+        console.log("logout successfully");
+        
+    } catch (error) {
+        res.send("user falid", error);
+    }
+    res.render("secret");
+})
 router.post("/register", async (req, res) => {
     try {
         const { name, email, gender, number, password, cpassword } = req.body;
